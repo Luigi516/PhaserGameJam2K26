@@ -1,4 +1,4 @@
-# PHASER GAME JAM 2025
+# PHASER GAME JAM 2025-2026
 ## Templates and Game Examples
 
 Documentazione del corso
