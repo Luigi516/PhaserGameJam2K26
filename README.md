@@ -26,6 +26,7 @@ https://phaser.discourse.group/
 https://shakuro.com/blog/phaser-js-a-step-by-step-tutorial-on-making-a-phaser-3-game  
 https://github.com/Raiper34/awesome-phaser  
 
+
 #### Esempi di giochi
 https://labs.phaser.io/index.html?dir=games/&q=  
 https://www.emanueleferonato.com/2023/08/25/pure-typescript-class-with-no-depencencies-to-handle-draw-and-match-games-in-just-a-few-lines-full-phaser-example/  
