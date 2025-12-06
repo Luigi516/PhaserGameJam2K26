@@ -31,7 +31,7 @@ https://github.com/Raiper34/awesome-phaser
 https://labs.phaser.io/index.html?dir=games/&q=  
 https://www.emanueleferonato.com/2023/08/25/pure-typescript-class-with-no-depencencies-to-handle-draw-and-match-games-in-just-a-few-lines-full-phaser-example/  
 https://www.emanueleferonato.com/2023/06/01/build-a-html5-game-like-mini-archer-using-phaser-and-typescript-step-6-splitting-the-code-into-classes/  
-https://www.emanueleferonato.com/2022/05/11/  block-it-html5-game-ported-to-typescript-with-some-new-features-powered-by-phaser-and-arcade-physics/  
+https://www.emanueleferonato.com/2022/05/11/block-it-html5-game-ported-to-typescript-with-some-new-features-powered-by-phaser-and-arcade-physics/  
 
 #### Grafica
 https://www.spriters-resource.com/  
