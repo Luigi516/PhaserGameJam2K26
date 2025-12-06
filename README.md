@@ -7,13 +7,13 @@ Documentazione del corso
 # Risorse utili
 
 #### Aggiornamenti di Phaser
-(https://phaser.world/)
-(https://discord.com/invite/phaser)
+https://phaser.world/  
+https://discord.com/invite/phaser
 
 #### Documentazione
-https://docs.phaser.io/phaser/getting-started/what-is-phaser
-https://triqui.gumroad.com/l/qousk
-https://phaserplugins.com/
+https://docs.phaser.io/phaser/getting-started/what-is-phaser  
+https://triqui.gumroad.com/l/qousk  
+https://phaserplugins.com/  
 https://rexrainbow.github.io/phaser3-rex-notes/docs/site/
 
 #### Esempi di codice
