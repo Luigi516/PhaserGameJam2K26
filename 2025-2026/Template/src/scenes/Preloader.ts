@@ -2,9 +2,9 @@
 import { GameData } from "../GameData";
 import WebFontFile from '../scenes/webFontFile';
 
-export default class Preloader extends Phaser.Scene {
+export default class Preloader extends Phaser.Scene {   // uguale a quella di boot
 
-  private _loading: Phaser.GameObjects.Text;
+  private _loading: Phaser.GameObjects.Text;            // è un tipo specifico di phaser -> visualizza testo mediante phaser
   private _progress: Phaser.GameObjects.Graphics;
   private _image: Phaser.GameObjects.Image;
 
@@ -15,28 +15,29 @@ export default class Preloader extends Phaser.Scene {
   }
 
   preload() {
+    // return; 
     this.cameras.main.setBackgroundColor(GameData.globals.bgColor);
-    this._progress = this.add.graphics();
-    this.loadAssets();
+    this._progress = this.add.graphics();             // assegnazione restituisce on ogetto grafico, creato senza passare nessun valore 
+    this.loadAssets();                                // richiamo di load 
   }
 
   init() {
-    this._image = this.add
+    this._image = this.add    // creazione di immagine 
       .image(
-        GameData.preloader.imageX,
+        GameData.preloader.imageX,      // parametri 
         GameData.preloader.imageY,
         GameData.preloader.image
       )
       .setAlpha(0).setScale(.4);
 
-    this.tweens.add({
+    this.tweens.add({         // dissolvenza generale
       targets: [this._image],
       alpha: 1,
       duration: 500,
     });
 
-    this._loading = this.add
-      .text(this.game.canvas.width / 2, GameData.preloader.loadingTextY, "")
+    this._loading = this.add        // caricato un testo
+      .text(this.game.canvas.width / 2, GameData.preloader.loadingTextY, "")  // inizialmente vuoto
       .setAlpha(1)
       .setDepth(1001)
       .setOrigin(0.5, 1).setColor("#000000").setFontSize(40).setFontFamily(GameData.preloader.loadingTextFont);
@@ -44,7 +45,7 @@ export default class Preloader extends Phaser.Scene {
 
   loadAssets(): void {
 
-    this.load.on("start", () => { });
+    this.load.on("start", () => { });     // indica l'inizio del caricamento
 
     this.load.on("fileprogress", (file: any, value: any) => {
 
@@ -62,6 +63,9 @@ export default class Preloader extends Phaser.Scene {
 
       this._progress.clear();
       this._loading.setText(GameData.preloader.loadingTextComplete);
+      this.registry.set("level", 0);
+      console.log("siamo in preloader");
+
 
       this.input.once("pointerdown", () => {
         this.tweens.add({
@@ -72,7 +76,7 @@ export default class Preloader extends Phaser.Scene {
 
             //fermiamo la scena corrente
             this.scene.stop("Preloader");
-            //richiamiamo il metodo start della far partire la scena Intro
+            //richiamiamo il metodo start della far partire la scena Intro 
             this.scene.start("Intro");
 
           },

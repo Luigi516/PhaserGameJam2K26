@@ -6,12 +6,12 @@ export let GameData: gameData = {
     debug: false
   },
 
-  preloader: {
+  preloader: {      // qui carichiamo i data di ciascuna scena
     bgColor: "ffffff",
-    image: "logo",
+    image: "logo",      // corrisponde alla key dell'immagine precaricata in boot
     imageX: 1280 / 2,
     imageY: 800 / 2,
-    loadingText: "Caricamento...",
+    loadingText: "Sto caricando...",
     loadingTextFont: "roboto",
     loadingTextComplete: "Tappa/clicca per iniziare!!",
     loadingTextY: 700,
@@ -24,7 +24,7 @@ export let GameData: gameData = {
     { name: "player", path: "assets/images/player.png", width: 82, height: 70, frames: 50 },
 
   ],
-  images: [
+  images: [   // array di immagini che viene richiamato su
 
     { name: "phaser", path: "assets/images/logo-phaser.png" },
     { name: "freedoom", path: "assets/images/freedoom.png" },

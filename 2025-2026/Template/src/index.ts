@@ -48,7 +48,7 @@ window.addEventListener("load", () => {
       keyboard: true,
     },
     render: {
-      pixelArt: false,
+      pixelArt: true,
       antialias: true,
     },
   };
