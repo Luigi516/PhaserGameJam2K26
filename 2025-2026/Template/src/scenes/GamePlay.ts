@@ -1,4 +1,6 @@
 import { GameData } from "../GameData";
+import Bullet from "./Bullet"; 
+
 
 enum playerState{
   IDLE, 
@@ -20,10 +22,16 @@ private _playerImage: Phaser.GameObjects.Sprite;
 private _playersfizioso: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody; 
 private _playerState: playerState = playerState.IDLE;
 
+/* Stato */
+private _Vita : number; 
+private _Munizioni : number; 
 
-/* 
-      VARIABILI MAPPA 
-*/
+private _ProiettiliGRP: Phaser.Physics.Arcade.Group;
+private _fireRate: number = 200; 
+private _lastFired: number = 0;
+
+
+/* Mappa */
 private _map : Phaser.Tilemaps.Tilemap; 
 private _tileset : Phaser.Tilemaps.Tileset; 
 private _layer : Phaser.Tilemaps.TilemapLayer; 
@@ -131,6 +139,7 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
   create(){
     this._CameraPrincipale = this.cameras.main; 
     this._cursors = this.input.keyboard.createCursorKeys();
+    // const margin = 100;
 
     console.log("siamo in gemaplay"); 
 
@@ -171,13 +180,12 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
 
     this._playersfizioso = this.physics.add.sprite(this.game.canvas.width/2, this.game.canvas.height/2, "delimiter")
       .setScale(1) 
-      .setOrigin(0.5, 0.5);
-
-    this._playersfizioso.setCollideWorldBounds(true).setPosition(60, 150);
-    this._CameraPrincipale.setZoom(6);
-
+      .setOrigin(0.5, 0.5)
+      .setCollideWorldBounds(true)
+      .setPosition(70 + 100, 180 + 100); // + margin
 
 
+    this._CameraPrincipale.setZoom(4);
     this._cursors = this.input.keyboard.createCursorKeys(); 
 
 
@@ -192,8 +200,34 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
     this._layer.setDepth(0); 
     this._layer2.setDepth(1).setAlpha(0);
     this._playersfizioso.setDepth(2);
-
     this.physics.add.collider(this._playersfizioso, this._layer2);
+
+
+    this._ProiettiliGRP = this.physics.add.group({
+      classType: Bullet,
+      maxSize: 30,
+      runChildUpdate: true
+    });
+    this.physics.add.collider(this._ProiettiliGRP, this._layer2, (proiettile: any) => {
+      proiettile.disableBody(true, true);
+    });
+
+
+    // barra stato
+    this.scene.launch("Hud");
+    this._Vita = 100;
+    this._Munizioni = 30;
+
+    this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+      if (pointer.leftButtonDown()) {
+          if (this._Munizioni > 0) {
+              this._Munizioni--;
+              this.events.emit("AggiornaMuniz", this._Munizioni);
+              // Qui chiamerai la funzione per creare fisicamente il proiettile
+          }
+      }
+    });
+
 
   }
 
@@ -201,7 +235,10 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
 
   }
   update(time: number, delta: number): void {
-    // Reset velocità a ogni frame
+
+    const timeNow = this.time.now;
+    this.GestoreMouse(this._Munizioni, timeNow, this._lastFired, this._ProiettiliGRP); 
+
     this._playersfizioso.setVelocity(0);
 
     if(this._cursors.left.isDown){
@@ -216,6 +253,9 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
       this._playersfizioso.setVelocityY(160); 
     }
     console.log("posizione:", this._playersfizioso.x, "|", this._playersfizioso.y);
+
+
+    
 }
 
 
@@ -224,37 +264,62 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
   createMap(): void{
       if(this._map != null) this._map.destroy(); 
       this._map = this.make.tilemap({key:"mappa-v1"});
+      const margin = 100; 
+
 
       this._CameraPrincipale.setBounds(
         0, 
         0, 
-        this._map.widthInPixels,
-        this._map.heightInPixels
+        this._map.widthInPixels + (margin * 2),
+        this._map.heightInPixels + (margin * 2), 
       ); 
 
 
       this.physics.world.setBounds(
-        0, 
-        0, 
+        margin, 
+        margin, 
         this._map.widthInPixels,
         this._map.heightInPixels
       );
+
       this._tileset = this._map.addTilesetImage("mappasperiamo", "tilesetv1"); 
 
+
+
       this._layer = this._map
-        .createLayer("world", this._tileset, 0, 0)
+        .createLayer("world", this._tileset, margin, margin)
         .setDepth(0);
 
       this._layer2 = this._map
-      .createLayer("collision", this._tileset, 0, 0)
-      .setDepth(1);
+        .createLayer("collision", this._tileset, margin, margin)
+        .setDepth(1);
 
       this._layer2.setCollisionByProperty({
         collide : true,
       }); 
 
         
+  }
+  GestoreMouse(munizioni: number, timeNow: number, lastFired: number, proiettili: Phaser.Physics.Arcade.Group ) : void{
+    if (this.input.activePointer.leftButtonDown()) {
+      if (munizioni > 0 && timeNow > lastFired) {
+          
+          const bullet = proiettili.get() as Bullet;
+
+          if(bullet){
+              const targetX = this.input.activePointer.x + this.cameras.main.scrollX;
+              const targetY = this.input.activePointer.y + this.cameras.main.scrollY;
+
+              bullet.fire(this._playersfizioso.x, this._playersfizioso.y, targetX, targetY);
+
+              this._Munizioni--;
+              this.events.emit("AggiornaMuniz", this._Munizioni);
+              this._lastFired = timeNow + this._fireRate;
+          }
+      }
     }
+  }
+
     
 }
 
