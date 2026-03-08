@@ -7,6 +7,9 @@ import Preloader from "./scenes/Preloader";
 import GamePlay from "./scenes/GamePlay";
 import GameOver from "./scenes/GameOver";
 import Intro from "./scenes/Intro";
+import Character from "./scenes/Character";
+
+
 //importiamo GameData che contiene i valori globali del gioco
 import { GameData } from "./GameData";
 
@@ -36,6 +39,7 @@ window.addEventListener("load", () => {
       Preloader,
       Intro,
       GamePlay,
+      Character, 
       GameOver
     ],
     physics: {
@@ -57,3 +61,13 @@ window.addEventListener("load", () => {
   const game = new Phaser.Game(config);
 
 });
+
+
+// i gameobjects sono gli elementi del gioco,  diversi tipi:
+// text, image 
+// sprite -> immagini animate montate in spritesheet
+// tilesprite -> immagini contigue che si possono replicare -> utilizzato per il parallax
+// group -> serve a raggruppare altri ogetti -> possono essere messi in collisione tra loro 
+// container -> serve raggrupatori ma utili all'interfaccia es. menu a tendina agisce su tt gli elementi in esso
+// GameObjectFactory contiene questi ogetti
+// all'interno della scena possono esserci vari metodi

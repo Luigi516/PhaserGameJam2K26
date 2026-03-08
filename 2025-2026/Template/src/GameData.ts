@@ -1,7 +1,7 @@
 export let GameData: gameData = {
   globals: {
-    gameWidth: 1280,
-    gameHeight: 800,
+    gameWidth: 1920,
+    gameHeight: 1080,
     bgColor: "#ffffff",
     debug: false
   },
@@ -9,8 +9,8 @@ export let GameData: gameData = {
   preloader: {      // qui carichiamo i data di ciascuna scena
     bgColor: "ffffff",
     image: "logo",      // corrisponde alla key dell'immagine precaricata in boot
-    imageX: 1280 / 2,
-    imageY: 800 / 2,
+    imageX: 1920 / 2,
+    imageY: 1080 / 2,
     loadingText: "Sto caricando...",
     loadingTextFont: "roboto",
     loadingTextComplete: "Tappa/clicca per iniziare!!",
@@ -20,10 +20,13 @@ export let GameData: gameData = {
   },
 
   spritesheets: [
-
     { name: "player", path: "assets/images/player.png", width: 82, height: 70, frames: 50 },
+    { name: "solaris", path: "assets/images/solaris.png", width: 251, height: 105, frames: 14},
+    { name: "tilemap-extruded", path: "assets/map/tilemap-extruded.png", width: 32, height: 32, spacing: 2},
 
+    {name: "tilesetv1", path: "assets/map/tileset.png", width: 16, height: 16, spacing: 0}
   ],
+
   images: [   // array di immagini che viene richiamato su
 
     { name: "phaser", path: "assets/images/logo-phaser.png" },
@@ -38,9 +41,10 @@ export let GameData: gameData = {
     { name: "bg-6", path: "assets/images/bg/6.png" },
     { name: "bg-7", path: "assets/images/bg/7.png" },
 
-
-
+    { name: "INIZIO", path: "assets/images/Inizio.png"}, 
+    { name: "delimiter", path: "assets/images/Delimiter.png"},
   ],
+
   atlas: [],
   sounds: [
     /*{
@@ -71,4 +75,13 @@ export let GameData: gameData = {
   fonts: [{key:"ralewayRegular", path:"assets/fonts/raleway.regular.ttf",type:"truetype"}],
   webfonts: [{ key: 'Nosifer' }, { key: 'Roboto' }, { key: 'Press+Start+2P' }, { key: 'Rubik+Doodle+Shadow' }, { key: 'Rubik+Glitch' }],
   bitmapfonts: [],
+
+  tilemaps: [
+    {key : "level-0", path : "assets/map/level-0.json"},
+    {key: "level-1", path : "assets/map/level-1.json"},
+    {key: "mappa-v1", path: "assets/map/speriamo.json"}
+  ]
 };
+
+
+// lo spritesheet può avere animazione

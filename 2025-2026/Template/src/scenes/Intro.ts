@@ -5,11 +5,10 @@ enum difficolta{
 }
 export default class Intro extends Phaser.Scene {
 
-  private _image1: Phaser.GameObjects.Image;
-  private _image2: Phaser.GameObjects.Image;
-  private _image3: Phaser.GameObjects.Image;
   private _LevelDifficulty: difficolta; 
-
+  private _bottoneInizio : Phaser.GameObjects.Image; 
+  private _zona : Phaser.GameObjects.Image; 
+  private _player: Phaser.GameObjects.Sprite;
 
   constructor() {
     super({
@@ -20,36 +19,47 @@ export default class Intro extends Phaser.Scene {
 
   preload() {
     console.log("siamo in intro");
-
   }
+
   create() {
-    this.cameras.main.setBackgroundColor("#e65656");
+    this.cameras.main.setBackgroundColor("#000000");
 
-
-    this._image1 = this.add.image(0, this.game.canvas.height / 2, "phaser")
-    this._image1
+    this._bottoneInizio = this.add.image(this.game.canvas.width / 4, this.game.canvas.height / 2, "INIZIO");
+    this._bottoneInizio
+      .setScale(6)
       .setInteractive()
       .on("pointerdown", () =>{
-        this._LevelDifficulty = difficolta.EASY; 
+        // this._LevelDifficulty = difficolta.EASY; 
         this.startGame(); 
-    }).setTintFill(0xeee33); 
+    }); 
 
-    this._image2 = this.add.image(this.game.canvas.width / 2, this.game.canvas.height / 2, "phaser")
-    this._image2
+    this._bottoneInizio = this.add.image(this.game.canvas.width / 4, this.game.canvas.height / 1.580, "INIZIO");
+    this._bottoneInizio
+      .setScale(6)
       .setInteractive()
       .on("pointerdown", () =>{
-        this._LevelDifficulty = difficolta.MEDIUM; 
+        // this._LevelDifficulty = difficolta.EASY; 
         this.startGame(); 
-    }).setTintFill(0xfff); 
+    }); 
 
-    this._image3 = this.add.image(this.game.canvas.width, this.game.canvas.height / 2, "phaser")
-    this._image3
+    this._zona = this.add.image(this.game.canvas.width - 400,  this.game.canvas.height / 2, "delimiter"); 
+    this._zona 
+      .setScale(12)
       .setInteractive()
       .on("pointerdown", () =>{
-        this._LevelDifficulty = difficolta.HARD; 
-        this.startGame
-    }).setTintFill(0x4444);
+        this.startGameCharacter(); 
+      })
 
+      /* Titolone */
+
+      this.anims.create({
+        key: "titolo",
+        frames: this.anims.generateFrameNumbers("solaris", {frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]}),
+        frameRate: 12,
+        repeat: -1
+      })
+      this._player = this.add.sprite(800, 290, "solaris").setScale(4.83);
+      this._player.play("titolo", true);
   }
 
   startGame(){
@@ -58,17 +68,9 @@ export default class Intro extends Phaser.Scene {
     this.scene.start("Hud");
   }
 
-
-
-
-
-
-
-  update(time: number, delta: number): void {
-    this._image1.angle += 4;
-    // this.scene.start("GamePlay", {level: this.LevelValue}); 
-
+  startGameCharacter(){
+    this.scene.stop(this); 
+    this.scene.start("Character");
   }
-
 }
 
