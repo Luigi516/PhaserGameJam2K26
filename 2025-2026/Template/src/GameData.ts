@@ -24,7 +24,23 @@ export let GameData: gameData = {
     { name: "solaris", path: "assets/images/solaris.png", width: 251, height: 105, frames: 14},
     { name: "tilemap-extruded", path: "assets/map/tilemap-extruded.png", width: 32, height: 32, spacing: 2},
 
-    {name: "tilesetv1", path: "assets/map/tileset.png", width: 16, height: 16, spacing: 0}
+
+    { name: "propulsore", path: "assets/images/Propulsione.png", width: 80, height: 48},
+
+    {   // IMPORTANTE
+      name: "tileset-astronave", 
+      path: "assets/map/tileset-astronave-extruded.png", 
+      width: 16, 
+      height: 16, 
+      margin: 1, 
+      spacing: 2},
+
+    {
+      name: "tilesetv1", 
+      path: "assets/map/tileset.png", 
+      width: 16, 
+      height: 16, 
+      spacing: 0}
   ],
 
   images: [   // array di immagini che viene richiamato su
@@ -79,7 +95,10 @@ export let GameData: gameData = {
   tilemaps: [
     {key : "level-0", path : "assets/map/level-0.json"},
     {key: "level-1", path : "assets/map/level-1.json"},
-    {key: "mappa-v1", path: "assets/map/speriamo.json"}
+    {key: "mappa-v1", path: "assets/map/speriamo.json"},
+
+    // IMPORTANTE
+    {key: "mappa-astronave", path: "assets/map/AstroNave.json"},
   ]
 };
 

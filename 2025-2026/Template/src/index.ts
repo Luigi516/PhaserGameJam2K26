@@ -8,6 +8,7 @@ import GamePlay from "./scenes/GamePlay";
 import GameOver from "./scenes/GameOver";
 import Intro from "./scenes/Intro";
 import Character from "./scenes/Character";
+import Comando from "./scenes/Comando"; 
 
 
 //importiamo GameData che contiene i valori globali del gioco
@@ -40,6 +41,7 @@ window.addEventListener("load", () => {
       Intro,
       GamePlay,
       Character, 
+      Comando, 
       GameOver
     ],
     physics: {

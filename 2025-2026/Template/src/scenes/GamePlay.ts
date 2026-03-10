@@ -36,7 +36,7 @@ private _map : Phaser.Tilemaps.Tilemap;
 private _tileset : Phaser.Tilemaps.Tileset; 
 private _layer : Phaser.Tilemaps.TilemapLayer; 
 private _layer2 : Phaser.Tilemaps.TilemapLayer; 
-
+private _layerTrigger : Phaser.Tilemaps.TilemapLayer; 
 
 /*  constructor() {
     super({
@@ -137,6 +137,11 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
   }
 
   create(){
+
+    this.scene.bringToTop("Hud");
+
+
+
     this._CameraPrincipale = this.cameras.main; 
     this._cursors = this.input.keyboard.createCursorKeys();
     // const margin = 100;
@@ -182,10 +187,10 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
       .setScale(1) 
       .setOrigin(0.5, 0.5)
       .setCollideWorldBounds(true)
-      .setPosition(70 + 100, 180 + 100); // + margin
+      .setPosition(400, 318); // + margin
 
 
-    this._CameraPrincipale.setZoom(4);
+    this._CameraPrincipale.setZoom(4).setBackgroundColor(0x000)
     this._cursors = this.input.keyboard.createCursorKeys(); 
 
 
@@ -214,7 +219,7 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
 
 
     // barra stato
-    this.scene.launch("Hud");
+    console.log("qua");
     this._Vita = 100;
     this._Munizioni = 30;
 
@@ -228,8 +233,30 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
       }
     });
 
+    this.anims.create({
+      key: 'propulsore-sheet',
+      frames: this.anims.generateFrameNumbers('propulsore', {frames : [0, 1, 2, 3]}), 
+      frameRate: 12,
+      repeat: -1 // Loop infinito
+    });
+
+    const motoreSup = this.add.sprite(140, 283, 'propulsore');
+    motoreSup.setDepth(1); 
+    motoreSup.play('propulsore-sheet', true);
+
+    const motoreInf = this.add.sprite(140, 363, "propulsore"); 
+    motoreInf.setDepth(1).play("propulsore-sheet", true);
+
+    
 
   }
+
+
+
+
+
+
+
 
   preload(){
 
@@ -252,8 +279,24 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
     } else if(this._cursors.down.isDown){
       this._playersfizioso.setVelocityY(160); 
     }
-    console.log("posizione:", this._playersfizioso.x, "|", this._playersfizioso.y);
+    //console.log("posizione:", this._playersfizioso.x, "|", this._playersfizioso.y);
 
+    const margin = 100;
+
+    // Prendiamo le coordinate del centro del player
+    const worldX = this._playersfizioso.x;
+    const worldY = this._playersfizioso.y;
+
+    // TRUCCO: Usiamo direttamente il metodo della Tilemap che è più potente
+    // 'true' alla fine indica di ignorare i tile vuoti
+    const tile = this._map.getTileAtWorldXY(worldX, worldY, true, this._CameraPrincipale, "triggers");
+
+    if (tile) {
+        console.log("ID TILE TOCCATO:", tile.index);
+        if (tile.properties && tile.properties.COMANDO === true) {
+            this.AvviaComando();
+        }
+    }
 
     
 }
@@ -263,7 +306,7 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
 
   createMap(): void{
       if(this._map != null) this._map.destroy(); 
-      this._map = this.make.tilemap({key:"mappa-v1"});
+      this._map = this.make.tilemap({key:"mappa-astronave"});
       const margin = 100; 
 
 
@@ -282,7 +325,7 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
         this._map.heightInPixels
       );
 
-      this._tileset = this._map.addTilesetImage("mappasperiamo", "tilesetv1"); 
+      this._tileset = this._map.addTilesetImage("paola", "tileset-astronave"); 
 
 
 
@@ -298,7 +341,11 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
         collide : true,
       }); 
 
-        
+      this._layerTrigger = this._map
+        .createLayer("triggers", this._tileset, margin, margin)
+        .setDepth(2) 
+        .setAlpha(0.5);
+
   }
   GestoreMouse(munizioni: number, timeNow: number, lastFired: number, proiettili: Phaser.Physics.Arcade.Group ) : void{
     if (this.input.activePointer.leftButtonDown()) {
@@ -319,8 +366,13 @@ private _layer2 : Phaser.Tilemaps.TilemapLayer;
       }
     }
   }
-
-    
+  AvviaComando(): void{
+    console.log("OMGG");
+    this.scene.pause(); 
+    this.scene.get("Hud").scene.sleep(); 
+    console.log("lanciamo!")
+    this.scene.launch("Comando"); 
+  }
 }
 
 

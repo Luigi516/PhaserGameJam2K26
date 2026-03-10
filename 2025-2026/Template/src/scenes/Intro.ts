@@ -65,6 +65,7 @@ export default class Intro extends Phaser.Scene {
   startGame(){
     this.scene.stop(this); 
     this.scene.start("GamePlay", {difficolta: this._LevelDifficulty}); 
+    this.scene.launch("Hud");
   }
 
   startGameCharacter(){

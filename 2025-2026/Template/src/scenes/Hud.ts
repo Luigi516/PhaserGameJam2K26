@@ -15,7 +15,7 @@ private _Munizioni: Phaser.GameObjects.Text;
 
 
   create() {
-    console.log("-> HUD"); 
+    console.log("fps: ", 0.000021); 
     this._Vita = this.add.text(20, 20, "VITA: 100", {font:"20px Calibri", color: "rgb(255, 0, 0)"}); 
     this._Munizioni = this.add.text(20, 55, "COLPI: 40", {font:"20px Calibri", color: "rgb(255, 0, 0)"}); 
     this._Punteggio = this.add.text(20, 90, "PUNTI: 0", { font: "25px calibri", color: "#ffff00" });
