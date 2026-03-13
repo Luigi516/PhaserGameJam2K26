@@ -1,31 +1,24 @@
 import { GameData } from "../GameData";
 import Bullet from "./Bullet"; 
+import Enemy from "./Enemy";
+import Fireball from "./Fireball";
+import SpaceInvaders from "./SpaceInvaders";
 
-
-enum playerState{
-  IDLE, 
-  RUNNING, 
-  JUMPING, 
-  FALLING
-}
 
 export default class GamePlay extends Phaser.Scene {
 
-private _image1 : Phaser.GameObjects.Image; 
 private _CameraPrincipale: Phaser.Cameras.Scene2D.Camera; 
-
 private _controls: Phaser.Cameras.Controls.SmoothedKeyControl;
 private _cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
 
 private _playerImage: Phaser.GameObjects.Sprite;
 private _playersfizioso: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody; 
-private _playerState: playerState = playerState.IDLE;
 
 /* Stato */
 private _Vita : number; 
 private _Munizioni : number; 
-
+private _isInvulnerable : boolean = false; 
 private _ProiettiliGRP: Phaser.Physics.Arcade.Group;
 private _fireRate: number = 200; 
 private _lastFired: number = 0;
@@ -37,6 +30,16 @@ private _tileset : Phaser.Tilemaps.Tileset;
 private _layer : Phaser.Tilemaps.TilemapLayer; 
 private _layer2 : Phaser.Tilemaps.TilemapLayer; 
 private _layerTrigger : Phaser.Tilemaps.TilemapLayer; 
+
+private _pistola: Phaser.GameObjects.Sprite;
+
+
+// nemici
+private _nemiciGRP: Phaser.Physics.Arcade.Group;
+private _fireballsGRP: Phaser.Physics.Arcade.Group;
+
+/* Gestione Aggiuntiva */
+private _isRitornoDalComando: boolean = false;
 
 /*  constructor() {
     super({
@@ -135,62 +138,44 @@ private _layerTrigger : Phaser.Tilemaps.TilemapLayer;
       key: "GamePlay",
     });
   }
+  init(data: any) {
+    if (data && data.spawnInvasori) {
+        this._isRitornoDalComando = true;
+    } else {
+        this._isRitornoDalComando = false;
+    }
+  }
+  private spawnInvasoriInBase() {
+      for (let i = 0; i < 2; i++) {
+          const nemico = new Enemy(this, 400 + (i * 100), 400, "enemy_texture");
+          this._nemiciGRP.add(nemico);
+      }
+  }
 
   create(){
 
     this.scene.bringToTop("Hud");
-
-
+    this.createPlayerAnimations();
+    this.createEnemyAnimations()
 
     this._CameraPrincipale = this.cameras.main; 
+    this.cameras.main.setBackgroundColor(0x000);
     this._cursors = this.input.keyboard.createCursorKeys();
-    // const margin = 100;
-
     console.log("siamo in gemaplay"); 
 
-  
-    /*      ROBA PERSONAGGIO
-    this._playerImage = this.add.sprite(this.game.canvas.width/2,this.game.canvas.width/2 - 200, "player", 10)
-    .setOrigin(0.5, 0.5)
-    .setScale(2); 
-
-
-      let _animation: Phaser.Types.Animations.Animation = {
-      	key: "player-running", 
-        frames: this.anims.generateFrameNumbers("player", { frames: [10,11,12,13,14,15,16,17] }),
-        frameRate: 10,
-        yoyo: false,    // reverse
-        repeat: -1       // loop continuo
-      };
-
-
-
-      this.anims.create(_animation);
-	    this._playerImage.play("player-running");    // sempre lagata al personaggio
-
-
-
-      _animation = {
-        key : "player-idle", 
-        frames : this.anims.generateFrameNumbers("player", { frames : [0,1,2,3,4]}), 
-        frameRate: 5,
-        yoyo: false,    // reverse
-        repeat: -1       // loop continuo
-      }
-      this.anims.create(_animation); 
-      this._playerImage.play("player-idle");
-      */
-    
-    //this.add.image(this.game.canvas.width / 2, this.game.canvas.height /2 , "intro-bg").setScale(10); 
-
-    this._playersfizioso = this.physics.add.sprite(this.game.canvas.width/2, this.game.canvas.height/2, "delimiter")
+    this._playersfizioso = this.physics.add.sprite(this.game.canvas.width/2, this.game.canvas.height/2, "solarplayer")
       .setScale(1) 
       .setOrigin(0.5, 0.5)
       .setCollideWorldBounds(true)
       .setPosition(400, 318); // + margin
+    this._playersfizioso.play('idle'); 
+
+    this._pistola = this.add.sprite(0, 0, "pistola");
+    this._pistola.setDepth(3).setScale(0.5); 
+    this._pistola.setOrigin(-1, 0.5);
 
 
-    this._CameraPrincipale.setZoom(4).setBackgroundColor(0x000)
+    this._CameraPrincipale.setZoom(4);
     this._cursors = this.input.keyboard.createCursorKeys(); 
 
 
@@ -201,6 +186,7 @@ private _layerTrigger : Phaser.Tilemaps.TilemapLayer;
     this._CameraPrincipale.startFollow(this._playersfizioso, true, 0.05, 0.05); 
 
     this.createMap(); 
+    
     //this.setupObjects(); 
     this._layer.setDepth(0); 
     this._layer2.setDepth(1).setAlpha(0);
@@ -217,18 +203,16 @@ private _layerTrigger : Phaser.Tilemaps.TilemapLayer;
       proiettile.disableBody(true, true);
     });
 
-
-    // barra stato
+    this.spawnEnemies();
     console.log("qua");
     this._Vita = 100;
-    this._Munizioni = 30;
+    this._Munizioni = 300;
 
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
       if (pointer.leftButtonDown()) {
           if (this._Munizioni > 0) {
               this._Munizioni--;
               this.events.emit("AggiornaMuniz", this._Munizioni);
-              // Qui chiamerai la funzione per creare fisicamente il proiettile
           }
       }
     });
@@ -247,12 +231,179 @@ private _layerTrigger : Phaser.Tilemaps.TilemapLayer;
     const motoreInf = this.add.sprite(140, 363, "propulsore"); 
     motoreInf.setDepth(1).play("propulsore-sheet", true);
 
+
+     this.anims.create({
+        key: "bgplay",
+        frames: this.anims.generateFrameNumbers("sfondoplay", {frames: [0, 1, 2, 3, 4, 5, 6, 7]}),
+        frameRate: 12,
+        repeat: -1
+      })
+      const bo = this.add.sprite(480, 350, "sfondoplay").setScale(2).setDepth(-3);
+      bo.play("bgplay", true);
+
     
 
-  }
+    this._fireballsGRP = this.physics.add.group({
+      classType: Fireball,
+      maxSize: 10,
+      runChildUpdate: true
+    });
+
+    // se il nemico mi colpisce o mi picchia toglie 10 sti nabbi
+    this.physics.add.overlap(this._playersfizioso, this._fireballsGRP, (player, ball) => {
+      const fb = ball as any; 
+      this.playerHit(10, {x: fb.x, y: fb.y}); 
+      fb.disableBody(true, true)
+    }, null, this);
 
 
+    this.physics.add.collider(this._playersfizioso, this._nemiciGRP, (player, enemy) => {
+      const e = enemy as Enemy;
+      this.playerHit(10, { x: e.x, y: e.y });
+    }, null, this);
 
+    /* Quello che deve succede quando torno da spaceinv */
+    this.input.keyboard.clearCaptures();
+    this._cursors = this.input.keyboard.createCursorKeys();
+    this.physics.resume();
+
+    if (this._isRitornoDalComando) {
+        // Se torniamo dallo spazio, facciamo spawnare SOLO 3 nemici
+        this.spawnTreInvasori();
+    }
+}
+
+
+private spawnTreInvasori() {
+    this._nemiciGRP.clear(true, true);
+    for (let i = 0; i < 3; i++) {
+        let offsetX = (i === 1) ? -20 : 20;
+        let offsetY = (i === 2) ? -20 : 20;
+
+        const nemico = new Enemy(this, this._playersfizioso.x + offsetX, this._playersfizioso.y + offsetY, "enemy_texture");
+        this._nemiciGRP.add(nemico);
+    }
+}
+
+
+private playerHit(damage: number, source?: { x: number, y: number }) {
+    if (this._isInvulnerable) return;
+
+    this._Vita -= damage;
+    this._isInvulnerable = true;
+
+    // HUD aggiornamento
+    this.events.emit("AggiornaVita", this._Vita);
+
+    if (source) {
+        const angle = Phaser.Math.Angle.Between(source.x, source.y, this._playersfizioso.x, this._playersfizioso.y);
+        this._playersfizioso.setVelocity(Math.cos(angle) * 300, Math.sin(angle) * 300);
+    }
+
+    // Lampeggio tattico di debolezza 
+    this.tweens.add({
+        targets: this._playersfizioso,
+        alpha: 0,
+        duration: 100,
+        yoyo: true,
+        repeat: 5, // 1seccc
+        onComplete: () => {
+            this._playersfizioso.alpha = 1;
+            this._isInvulnerable = false;
+        }
+    });
+
+    if (this._Vita <= 0) {  // HO PERSO 
+        console.log("GAME OVER");
+    }
+}
+
+private createPlayerAnimations(): void {
+  // Definiamo le righe per ogni direzione basandoci sullo spritesheet
+  const directions = [
+      { key: 'walk-n',  row: 0 }, 
+      { key: 'walk-ne', row: 0 }, 
+      { key: 'walk-e',  row: 3 }, 
+      { key: 'walk-se', row: 3 }, 
+      { key: 'walk-s',  row: 1 }, 
+      { key: 'walk-sw', row: 2 }, 
+      { key: 'walk-w',  row: 2 }, 
+      { key: 'walk-nw', row: 0 }  
+  ];
+
+  directions.forEach(dir => {
+      this.anims.create({
+          key: dir.key,
+          frames: this.anims.generateFrameNumbers('solarplayer', { 
+              start: dir.row * 8, 
+              end: (dir.row * 8) + 7 
+          }),
+          frameRate: 10,
+          repeat: -1
+      });
+  });
+  this.anims.create({
+      key: 'idle',
+      frames: [{ key: 'solarplayer', frame: 40 }],
+      frameRate: 1
+  });
+}
+private createEnemyAnimations(): void {
+    const enemyDirections = [
+        { key: 'enemy-down',  row: 0 },
+        { key: 'enemy-left',  row: 1 },
+        { key: 'enemy-right', row: 2 },
+        { key: 'enemy-up',    row: 3 }
+    ];
+
+    enemyDirections.forEach(dir => {
+        this.anims.create({
+            key: dir.key,
+            frames: this.anims.generateFrameNumbers('nemicobase', { 
+                start: dir.row * 4, 
+                end: (dir.row * 4) + 3 
+            }),
+            frameRate: 8,
+            repeat: -1
+        });
+    });
+}
+
+
+private spawnEnemies(): void {
+    // Inizializziamo il gruppo in modo semplice
+    this._nemiciGRP = this.physics.add.group();
+
+    // Prendiamo il layer dal file JSON della mappa
+    const enemyLayer = this._map.getObjectLayer('enemies');
+    
+    if (enemyLayer && enemyLayer.objects) {
+        enemyLayer.objects.forEach(obj => {
+            const nemico = new Enemy(this, obj.x + 100, obj.y + 100, "nemicobase");
+            this._nemiciGRP.add(nemico);
+        });
+    }
+    this.physics.add.collider(this._nemiciGRP, this._layer2); 
+    this.physics.add.overlap(this._ProiettiliGRP, this._nemiciGRP, this.damageEnemy, null, this);
+
+    enemyLayer.objects.forEach((obj, index) => {
+        const isRanged = index % 2 !== 0; 
+        const nemico = new Enemy(this, obj.x + 100, obj.y + 100, "nemicobase", isRanged);
+        this._nemiciGRP.add(nemico);
+    });
+}
+
+private damageEnemy(proiettile: any, nemico: any): void {
+    const b = proiettile as any;
+    const e = nemico as Enemy;
+
+    b.disableBody(true, true);
+    e.damage(1); 
+    
+    if (e.active && e.applyKnockback) {
+        e.applyKnockback(b.x, b.y);
+    }
+}
 
 
 
@@ -263,45 +414,78 @@ private _layerTrigger : Phaser.Tilemaps.TilemapLayer;
   }
   update(time: number, delta: number): void {
 
-    const timeNow = this.time.now;
-    this.GestoreMouse(this._Munizioni, timeNow, this._lastFired, this._ProiettiliGRP); 
+    const speed = 160;
+    let vx = 0;
+    let vy = 0;
+    let animKey = 'idle';
 
-    this._playersfizioso.setVelocity(0);
+    if (this._cursors.left.isDown) vx = -speed;
+    else if (this._cursors.right.isDown) vx = speed;
 
-    if(this._cursors.left.isDown){
-      this._playersfizioso.setVelocityX(-160); 
-    } else if(this._cursors.right.isDown){
-      this._playersfizioso.setVelocityX(160); 
+    if (this._cursors.up.isDown) vy = -speed;
+    else if (this._cursors.down.isDown) vy = speed;
+
+    if (vx === 0 && vy < 0) animKey = 'walk-n';
+    else if (vx > 0 && vy < 0) animKey = 'walk-ne';
+    else if (vx > 0 && vy === 0) animKey = 'walk-e';
+    else if (vx > 0 && vy > 0) animKey = 'walk-se';
+    else if (vx === 0 && vy > 0) animKey = 'walk-s';
+    else if (vx < 0 && vy > 0) animKey = 'walk-sw';
+    else if (vx < 0 && vy === 0) animKey = 'walk-w';
+    else if (vx < 0 && vy < 0) animKey = 'walk-nw';
+
+    this._playersfizioso.setVelocity(vx, vy);
+
+    if (vx !== 0 && vy !== 0) {
+        this._playersfizioso.body.velocity.normalize().scale(speed);
     }
 
-    if(this._cursors.up.isDown){
-      this._playersfizioso.setVelocityY(-160); 
-    } else if(this._cursors.down.isDown){
-      this._playersfizioso.setVelocityY(160); 
+    if (animKey !== 'idle') {
+        this._playersfizioso.anims.play(animKey, true);
+    } else {
+        this._playersfizioso.anims.play('idle');
     }
-    //console.log("posizione:", this._playersfizioso.x, "|", this._playersfizioso.y);
 
-    const margin = 100;
-
-    // Prendiamo le coordinate del centro del player
     const worldX = this._playersfizioso.x;
     const worldY = this._playersfizioso.y;
-
-    // TRUCCO: Usiamo direttamente il metodo della Tilemap che è più potente
-    // 'true' alla fine indica di ignorare i tile vuoti
     const tile = this._map.getTileAtWorldXY(worldX, worldY, true, this._CameraPrincipale, "triggers");
-
-    if (tile) {
-        console.log("ID TILE TOCCATO:", tile.index);
-        if (tile.properties && tile.properties.COMANDO === true) {
-            this.AvviaComando();
-        }
+    if (tile && tile.properties && tile.properties.COMANDO === true) {
+        this.AvviaComando();
     }
 
+    this._pistola.setPosition(this._playersfizioso.x, this._playersfizioso.y);
+
+    const mouseX = this.input.activePointer.worldX;
+    const mouseY = this.input.activePointer.worldY;
+
+    const angle = Phaser.Math.Angle.Between(
+        this._playersfizioso.x, 
+        this._playersfizioso.y, 
+        mouseX, 
+        mouseY
+    );
+
+    this._pistola.rotation = angle;
+
+    if (mouseX < this._playersfizioso.x) {
+        this._pistola.flipY = true;
+    } else {
+        this._pistola.flipY = false;
+    }
     
-}
+    this.GestoreMouse(this._Munizioni, this.time.now, this._lastFired, this._ProiettiliGRP);
 
+    if (this._nemiciGRP && this._nemiciGRP.getLength() > 0) {
+      this._nemiciGRP.children.iterate((nemico: any) => {
+          const e = nemico as Enemy;
+          if (e && e.active && e.updateAI) {
+              e.updateAI(this._playersfizioso.x, this._playersfizioso.y, this._fireballsGRP);
+          }
+          return true;
+      });
+    }
 
+  }
 
 
   createMap(): void{
@@ -354,10 +538,15 @@ private _layerTrigger : Phaser.Tilemaps.TilemapLayer;
           const bullet = proiettili.get() as Bullet;
 
           if(bullet){
+              const distanzaPunta = 25;
               const targetX = this.input.activePointer.x + this.cameras.main.scrollX;
               const targetY = this.input.activePointer.y + this.cameras.main.scrollY;
 
-              bullet.fire(this._playersfizioso.x, this._playersfizioso.y, targetX, targetY);
+              const puntaX = this._playersfizioso.x + Math.cos(this._pistola.rotation) * distanzaPunta;
+              const puntaY = this._playersfizioso.y + Math.sin(this._pistola.rotation) * distanzaPunta;
+
+
+              bullet.fire(puntaX, puntaY, targetX, targetY);
 
               this._Munizioni--;
               this.events.emit("AggiornaMuniz", this._Munizioni);
@@ -367,11 +556,10 @@ private _layerTrigger : Phaser.Tilemaps.TilemapLayer;
     }
   }
   AvviaComando(): void{
-    console.log("OMGG");
+    console.log("Trigger di comando attivato: Avvio Battaglia Spaziale!");
     this.scene.pause(); 
-    this.scene.get("Hud").scene.sleep(); 
-    console.log("lanciamo!")
-    this.scene.launch("Comando"); 
+    this.scene.get("Hud").events.emit("modalita-spazio", true);
+    this.scene.launch("SpaceInvaders"); 
   }
 }
 

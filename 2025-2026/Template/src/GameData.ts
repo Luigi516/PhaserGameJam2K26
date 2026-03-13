@@ -2,20 +2,20 @@ export let GameData: gameData = {
   globals: {
     gameWidth: 1920,
     gameHeight: 1080,
-    bgColor: "#ffffff",
+    bgColor: "#8f8f8f",
     debug: false
   },
 
   preloader: {      // qui carichiamo i data di ciascuna scena
-    bgColor: "ffffff",
+    bgColor: "#000000",
     image: "logo",      // corrisponde alla key dell'immagine precaricata in boot
     imageX: 1920 / 2,
     imageY: 1080 / 2,
     loadingText: "Sto caricando...",
     loadingTextFont: "roboto",
-    loadingTextComplete: "Tappa/clicca per iniziare!!",
-    loadingTextY: 700,
-    loadingBarColor: 0xff0000,
+    loadingTextComplete: "***",
+    loadingTextY: 800,
+    loadingBarColor: 0x000,
     loadingBarY: 630,
   },
 
@@ -23,6 +23,15 @@ export let GameData: gameData = {
     { name: "player", path: "assets/images/player.png", width: 82, height: 70, frames: 50 },
     { name: "solaris", path: "assets/images/solaris.png", width: 251, height: 105, frames: 14},
     { name: "tilemap-extruded", path: "assets/map/tilemap-extruded.png", width: 32, height: 32, spacing: 2},
+
+    { 
+      name: "sfondoplay", 
+      path: "assets/images/background.png", 
+      width: 480, 
+      height: 270, 
+      frames: 12 
+    },
+
 
 
     { name: "propulsore", path: "assets/images/Propulsione.png", width: 80, height: 48},
@@ -40,25 +49,35 @@ export let GameData: gameData = {
       path: "assets/map/tileset.png", 
       width: 16, 
       height: 16, 
-      spacing: 0}
+      spacing: 0},
+
+
+
+      // In GameData.ts
+    //{name: "boss", path : "assets/images/boss.png"};
+    { name: "solarplayer", path: "assets/images/Modello.png", width: 32, height: 32 },
+    { name: "nemicobase", path: "assets/images/enemy.png", width: 32, height: 32 },
+    { name: "naveTerzaPersona", path: "assets/images/naveTerzaPersona.png", width: 768, height: 427, frames: 5},
   ],
 
   images: [   // array di immagini che viene richiamato su
 
     { name: "phaser", path: "assets/images/logo-phaser.png" },
-    { name: "freedoom", path: "assets/images/freedoom.png" },
-    { name: "thelucasart", path: "assets/images/thelucasart.png" },
-    { name: "intro-bg", path: "assets/images/intro-bg.jpg" },
-    { name: "bg-1", path: "assets/images/bg/1.png" },
-    { name: "bg-2", path: "assets/images/bg/2.png" },
-    { name: "bg-3", path: "assets/images/bg/3.png" },
-    { name: "bg-4", path: "assets/images/bg/4.png" },
-    { name: "bg-5", path: "assets/images/bg/5.png" },
-    { name: "bg-6", path: "assets/images/bg/6.png" },
-    { name: "bg-7", path: "assets/images/bg/7.png" },
-
     { name: "INIZIO", path: "assets/images/Inizio.png"}, 
     { name: "delimiter", path: "assets/images/Delimiter.png"},
+    { name: "hud-vita", path: "assets/images/HUD/vita.png"}, 
+    { name: "hud-evo", path: "assets/images/HUD/evo.png"}, 
+    { name: "hud-colpi", path: "assets/images/HUD/colpi.png"}, 
+
+
+
+    { name: "pistola", path: "assets/images/pistola.png" },
+    { name: "bullet", path: "assets/images/bullet.png"}, 
+    { name: "fireball", path: "assets/images/fireball.png" }, // Usa bullet.png o un'altra immagine per test
+
+
+    { name: "btn-back", path: "assets/images/btn_back.png" },
+    { name: "btn-next", path: "assets/images/btn_next.png" }
   ],
 
   atlas: [],
@@ -88,7 +107,7 @@ export let GameData: gameData = {
   ],
 
   scripts: [],
-  fonts: [{key:"ralewayRegular", path:"assets/fonts/raleway.regular.ttf",type:"truetype"}],
+  fonts: [{key:"yoster", path:"assets/fonts/yoster.ttf",type:"truetype"}],
   webfonts: [{ key: 'Nosifer' }, { key: 'Roboto' }, { key: 'Press+Start+2P' }, { key: 'Rubik+Doodle+Shadow' }, { key: 'Rubik+Glitch' }],
   bitmapfonts: [],
 

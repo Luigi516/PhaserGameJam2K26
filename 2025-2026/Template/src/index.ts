@@ -9,7 +9,7 @@ import GameOver from "./scenes/GameOver";
 import Intro from "./scenes/Intro";
 import Character from "./scenes/Character";
 import Comando from "./scenes/Comando"; 
-
+import SpaceInvaders from "./scenes/SpaceInvaders";
 
 //importiamo GameData che contiene i valori globali del gioco
 import { GameData } from "./GameData";
@@ -42,7 +42,8 @@ window.addEventListener("load", () => {
       GamePlay,
       Character, 
       Comando, 
-      GameOver
+      GameOver,
+      SpaceInvaders,
     ],
     physics: {
       default: "arcade",

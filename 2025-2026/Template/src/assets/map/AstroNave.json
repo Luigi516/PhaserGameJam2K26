@@ -49,9 +49,75 @@
          "width":47,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":4,
+         "name":"enemies",
+         "objects":[
+                {
+                 "height":5,
+                 "id":23,
+                 "name":"nemicobase",
+                 "rotation":0,
+                 "type":"enemy",
+                 "visible":true,
+                 "width":5.5,
+                 "x":117.25,
+                 "y":117.75
+                }, 
+                {
+                 "height":8,
+                 "id":24,
+                 "name":"nemicobase",
+                 "rotation":0,
+                 "type":"enemy",
+                 "visible":true,
+                 "width":7.75,
+                 "x":179.75,
+                 "y":293.25
+                }, 
+                {
+                 "height":5.75,
+                 "id":25,
+                 "name":"nemicobase",
+                 "rotation":0,
+                 "type":"enemy",
+                 "visible":true,
+                 "width":6.25,
+                 "x":181,
+                 "y":150.5
+                }, 
+                {
+                 "height":8,
+                 "id":26,
+                 "name":"nemicobase",
+                 "rotation":0,
+                 "type":"enemy",
+                 "visible":true,
+                 "width":7.5,
+                 "x":101.25,
+                 "y":260.75
+                }, 
+                {
+                 "height":9.5,
+                 "id":27,
+                 "name":"nemicobase",
+                 "rotation":0,
+                 "type":"enemy",
+                 "visible":true,
+                 "width":10.5,
+                 "x":507,
+                 "y":219.5
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":4,
- "nextobjectid":1,
+ "nextlayerid":5,
+ "nextobjectid":28,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.8.2",
